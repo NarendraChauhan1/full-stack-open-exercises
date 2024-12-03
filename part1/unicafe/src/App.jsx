@@ -8,6 +8,7 @@ const Button = ({eventHandler, text}) => <button onClick={eventHandler}>{text}</
 
 const Statistics = ({good, neutral, bad}) => {
   const Total = good + neutral + bad
+  if (Total){
   return (
     <div>
     <p>good {good}</p>
@@ -18,6 +19,7 @@ const Statistics = ({good, neutral, bad}) => {
     <p>positive {(good/Total) * 100} %</p>
     </div>
   )
+}
 }
 
 const App = () => {
