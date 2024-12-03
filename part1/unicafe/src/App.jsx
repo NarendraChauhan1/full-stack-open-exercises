@@ -14,6 +14,8 @@ const App = () => {
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
 
+  const Total = good + neutral + bad
+
   return (
     <div>
     <TitleText text={"give feedback"} />
@@ -24,6 +26,9 @@ const App = () => {
     <ParaText text={"good" + " " + good} />
     <ParaText text={"neutral" + " " + neutral} />
     <ParaText text={"bad"+ " " + bad} />
+    <ParaText text={"all" + " " + Total} />
+    <ParaText text={"average" + " " + ((good * 1) + (neutral * 0) + (bad * -1))/Total} />
+    <ParaText text={"positive" + " " + (good/Total) * 100 + " " + "%"} />
     </div>
   )
 }
