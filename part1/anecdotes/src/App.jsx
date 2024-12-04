@@ -1,11 +1,17 @@
 import { useState } from 'react'
 
-const Button = ({newValue, text}) => {
+const NextButton = ({newValue, text}) => {
   return <button onClick={() => randomNumber(newValue)}>{text}</button>
 }
 
 const randomNumber = (updateValue) => {
   return updateValue(Math.floor(Math.random() * 8))
+}
+
+const VoteButton = ({currentVote, updateVote, currentAnecdote}) => {
+const newVotes = {...currentVote}
+newVotes[currentAnecdote] += 1
+return (<button onClick={() => updateVote(newVotes)}>vote</button>)
 }
 
 const App = () => {
@@ -21,11 +27,14 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [vote, newVote] = useState({0:0, 1:0,2:0,3:0,4:0,5:0,6:0,7:0})
 
   return (
     <div>
       {anecdotes[selected]} <br/>
-      <Button newValue={setSelected} text={"next anecdote"}/>
+      <p>has {vote[selected]} votes</p>
+      <VoteButton currentVote={vote} updateVote={newVote} currentAnecdote={selected} />
+      <NextButton newValue={setSelected} text={"next anecdote"}/>
     </div>
   )
 }
