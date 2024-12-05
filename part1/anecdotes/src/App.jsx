@@ -14,6 +14,20 @@ newVotes[currentAnecdote] += 1
 return (<button onClick={() => updateVote(newVotes)}>vote</button>)
 }
 
+const Heading = ({text}) => <h2>{text}</h2>
+
+const TopVoted = ({currentVote, currentAnecdote}) => {
+  const Highest = Math.max(...Object.values(currentVote))
+  const HighestVoted = Object.keys(currentVote).find((key) => currentVote[key] === Highest)
+  console.log(HighestVoted)
+  return (
+    <div>
+      <p>{currentAnecdote[HighestVoted]}</p>
+      <p>has {Highest} votes</p>
+    </div>
+  )
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -31,13 +45,15 @@ const App = () => {
 
   return (
     <div>
+      <Heading text={"Anecdote of the day"}/>
       {anecdotes[selected]} <br/>
       <p>has {vote[selected]} votes</p>
       <VoteButton currentVote={vote} updateVote={newVote} currentAnecdote={selected} />
       <NextButton newValue={setSelected} text={"next anecdote"}/>
+      <Heading text={"Anecdote with most Votes"}/>
+      <TopVoted currentVote={vote} currentAnecdote={anecdotes} />
     </div>
   )
 }
-
 
 export default App
