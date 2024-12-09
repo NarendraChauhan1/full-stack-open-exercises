@@ -1,6 +1,7 @@
 const Total = ({total}) => {
 console.log(total)
+const sum = total.reduce((accu, sum) => accu + sum.exercises, 0)
 return(
-<li>{`total of ${total.reduce((zero, content) => zero + content.exercises, 0)} exercises`}</li>)}
+<li>total of {sum} exercises</li>)}
 
 export default Total
