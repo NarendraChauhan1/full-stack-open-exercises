@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import Name from './components/Name'
+import Persons from './components/Persons'
+import Filter from './components/Filter'
+import Form from './components/Form'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -27,35 +29,18 @@ const App = () => {
     setNewName('')
   } 
 
-  const filter = (event) => {
-    const filterName = event.target.value
-    const filerList = [persons.find(person => person.name === filterName)]
-    const copyPersons = persons
-    persons.some(person => person.name.toLowerCase() === filterName.toLowerCase()) ? setPersons(filerList) : setPersons(copyPersons)    
-  }
+  const personsCopy = [...persons]
 
   return (
     <div>
       <h2>Phonebook</h2>
       <div>
-        Filter shown with <input onChange={filter}/>
+        <Filter copy={personsCopy} setPersons={setPersons}/>
       </div>
-      <h2>Add new contact</h2>
-      <form onSubmit={saveNameFunc}>
-        <div>
-          name: <input value={newName} onChange={newNameFunc} placeholder='Enter your name' required/>
-        </div>
-        <div>
-          number: <input value={newPhone} onChange={newPhoneFunc} placeholder='Enter your phone number' required/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h1>Add new contact</h1>
+      <Form newName={newName} newPhone={newPhone} newNameFunc={newNameFunc} saveNameFunc={saveNameFunc} newPhoneFunc={newPhoneFunc}/>
       <h2>Numbers</h2>
-      <ul>
-      {persons.map(contact => <Name names={contact} key={contact.id}/>)}
-      </ul>
+      <Persons persons={persons}/>
     </div>
   )
 }
