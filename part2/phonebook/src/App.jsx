@@ -1,46 +1,76 @@
-import { useState,useEffect } from 'react'
-import Persons from './components/Persons'
-import Filter from './components/Filter'
-import Form from './components/Form'
-import backendService from './services/noteService'
+import { useState, useEffect } from "react";
+import Persons from "./components/Persons";
+import Filter from "./components/Filter";
+import Form from "./components/Form";
+import backendService from "./services/noteService";
 
 const App = () => {
-  const [persons, setPersons] = useState([]) 
+  const [persons, setPersons] = useState([]);
 
-  const [newName, setNewName] = useState('')
-  const [newPhone, setNewPhone] = useState('')
+  const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
 
   useEffect(() => {
-    backendService.getPersons().then(response => setPersons(response))
-  }, [])
+    backendService.getPersons().then((response) => setPersons(response));
+  }, []);
 
-  const newNameFunc = (event) => setNewName(event.target.value) 
-  const newPhoneFunc = (event) => setNewPhone(event.target.value)
+  const newNameFunc = (event) => setNewName(event.target.value);
+  const newPhoneFunc = (event) => setNewPhone(event.target.value);
 
   const saveNameFunc = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const newPersons = {
       name: newName,
       number: newPhone,
-      id: String(persons.length + 1)
+      id: String(persons.length + 1),
+    };
+    persons.some((person) => person.name === newName)
+      ? alert(`${newName} is already added to phonebook`)
+      : backendService
+          .sendContactDetails(newPersons)
+          .then((response) => setPersons(persons.concat(response)));
+    setNewPhone("");
+    setNewName("");
+  };
+
+  const deleteNoteById = (id) => {
+    const contactToDelete = persons.find((contact) => contact.id === id);
+    if (confirm(`Delete ${contactToDelete.name} ?`)) {
+      backendService
+        .deleteById(id)
+        .then(
+          setPersons(
+            persons.filter((contact) => contact.id !== contactToDelete.id)
+          )
+        )
+        .catch((error) => {
+          alert("This contact has already been deleted from the server.");
+          setPersons(
+            persons.filter((contact) => contact.id !== contactToDelete.id)
+          );
+        });
     }
-    persons.some(person => person.name === newName ) ? alert(`${newName} is already added to phonebook`) : backendService.sendContactDetails(newPersons).then(response => setPersons(persons.concat(response)))
-    setNewPhone('')
-    setNewName('')
-  }
+  };
 
   return (
     <div>
       <h2>Phonebook</h2>
       <div>
-        <Filter copy={persons} setPersons={setPersons}/>
+        <Filter copy={persons} setPersons={setPersons} />
       </div>
       <h1>Add new contact</h1>
-      <Form newName={newName} newPhone={newPhone} newNameFunc={newNameFunc} saveNameFunc={saveNameFunc} newPhoneFunc={newPhoneFunc}/>
+      <Form
+        newName={newName}
+        newPhone={newPhone}
+        newNameFunc={newNameFunc}
+        saveNameFunc={saveNameFunc}
+        newPhoneFunc={newPhoneFunc}
+        hello={deleteNoteById}
+      />
       <h2>Numbers</h2>
-      <Persons persons={persons}/>
+      <Persons persons={persons} deleteNoteById={deleteNoteById} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
