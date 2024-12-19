@@ -2,25 +2,16 @@ import { useState,useEffect } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import Form from './components/Form'
-import axios from 'axios'
+import backendService from './services/noteService'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ]) 
+  const [persons, setPersons] = useState([]) 
 
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    backendService.getPersons().then(response => setPersons(response))
   }, [])
 
   const newNameFunc = (event) => setNewName(event.target.value) 
@@ -33,11 +24,10 @@ const App = () => {
       number: newPhone,
       id: String(persons.length + 1)
     }
-
-    persons.some(person => person.name === newName ) ? alert(`${newName} is already added to phonebook`) : setPersons(persons.concat(newPersons))
+    persons.some(person => person.name === newName ) ? alert(`${newName} is already added to phonebook`) : backendService.sendContactDetails(newPersons).then(response => setPersons(persons.concat(response)))
     setNewPhone('')
     setNewName('')
-  } 
+  }
 
   return (
     <div>
