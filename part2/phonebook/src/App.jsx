@@ -24,13 +24,38 @@ const App = () => {
       number: newPhone,
       id: String(persons.length + 1),
     };
-    persons.some((person) => person.name === newName)
-      ? alert(`${newName} is already added to phonebook`)
-      : backendService
-          .sendContactDetails(newPersons)
-          .then((response) => setPersons(persons.concat(response)));
-    setNewPhone("");
-    setNewName("");
+    if (persons.some((person) => person.name === newName)) {
+      if (
+        confirm(
+          `${newName} is already to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const matchingContact = persons.find(
+          (person) => person.name === newName
+        );
+        const updatingContact = { ...matchingContact, number: newPhone };
+        backendService
+          .updatedContact(updatingContact)
+          .then(() => {
+            return backendService.getPersons();
+          })
+          .then((response) => setPersons(response))
+          .then(alert("Contact is successfully updated"))
+          .catch((error) => {
+            alert("Failed to update contact");
+            console.error(error);
+          });
+      } else {
+        setNewPhone("");
+        setNewName("");
+      }
+    } else {
+      backendService
+        .sendContactDetails(newPersons)
+        .then((response) => setPersons(persons.concat(response)));
+      setNewPhone("");
+      setNewName("");
+    }
   };
 
   const deleteNoteById = (id) => {
