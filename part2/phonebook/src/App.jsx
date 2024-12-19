@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import Form from './components/Form'
+import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -10,8 +11,17 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ]) 
+
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
 
   const newNameFunc = (event) => setNewName(event.target.value) 
   const newPhoneFunc = (event) => setNewPhone(event.target.value)
@@ -29,13 +39,11 @@ const App = () => {
     setNewName('')
   } 
 
-  const personsCopy = [...persons]
-
   return (
     <div>
       <h2>Phonebook</h2>
       <div>
-        <Filter copy={personsCopy} setPersons={setPersons}/>
+        <Filter copy={persons} setPersons={setPersons}/>
       </div>
       <h1>Add new contact</h1>
       <Form newName={newName} newPhone={newPhone} newNameFunc={newNameFunc} saveNameFunc={saveNameFunc} newPhoneFunc={newPhoneFunc}/>
