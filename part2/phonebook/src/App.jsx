@@ -3,12 +3,13 @@ import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import backendService from "./services/noteService";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     backendService.getPersons().then((response) => setPersons(response));
@@ -16,6 +17,26 @@ const App = () => {
 
   const newNameFunc = (event) => setNewName(event.target.value);
   const newPhoneFunc = (event) => setNewPhone(event.target.value);
+
+  const styleRed = {
+    color: "red",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  };
+
+  const styleGreen = {
+    color: "green",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  };
 
   const saveNameFunc = (event) => {
     event.preventDefault();
@@ -40,10 +61,17 @@ const App = () => {
             return backendService.getPersons();
           })
           .then((response) => setPersons(response))
-          .then(alert("Contact is successfully updated"))
-          .catch((error) => {
-            alert("Failed to update contact");
-            console.error(error);
+          .then(() => {
+            setMessage(<p style={styleGreen}>Updated {newName}</p>);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          })
+          .catch(() => {
+            setMessage(<p style={styleRed}>Failed to update contact</p>);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
           });
       } else {
         setNewPhone("");
@@ -52,7 +80,13 @@ const App = () => {
     } else {
       backendService
         .sendContactDetails(newPersons)
-        .then((response) => setPersons(persons.concat(response)));
+        .then((response) => setPersons(persons.concat(response)))
+        .then(() => {
+          setMessage(<p style={styleGreen}>Added {newName}</p>);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        });
       setNewPhone("");
       setNewName("");
     }
@@ -60,7 +94,7 @@ const App = () => {
 
   const deleteNoteById = (id) => {
     const contactToDelete = persons.find((contact) => contact.id === id);
-    if (confirm(`Delete ${contactToDelete.name} ?`)) {
+    if (confirm(`Delete {contactToDelete.name} ?`)) {
       backendService
         .deleteById(id)
         .then(
@@ -68,11 +102,28 @@ const App = () => {
             persons.filter((contact) => contact.id !== contactToDelete.id)
           )
         )
-        .catch((error) => {
-          alert("This contact has already been deleted from the server.");
+        .then(() => {
+          setMessage(
+            <p style={styleGreen}>
+              {contactToDelete.name} is successfully deleted
+            </p>
+          );
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        })
+        .catch(() => {
+          setMessage(
+            <p style={styleRed}>
+              This contact has already been deleted from the server.
+            </p>
+          );
           setPersons(
             persons.filter((contact) => contact.id !== contactToDelete.id)
           );
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
         });
     }
   };
@@ -80,6 +131,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <div>
         <Filter copy={persons} setPersons={setPersons} />
       </div>
