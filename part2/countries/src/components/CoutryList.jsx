@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import apiService from '../services/apiService'
 import Languages from './Languages'
+import Weather from './Weather'
 
 const CountryList = ({ country }) => {
   const [selectedCountry, setSelectedCountry] = useState(country)
@@ -25,18 +26,19 @@ const CountryList = ({ country }) => {
         })
     }
     useEffect(getCountryDetails, [])
-    const countryDetails = data
     if (!data) {
       return <p>Loading...</p>
     }
     return (
       <div>
-        <h2 style={style}>{countryDetails.name.common}</h2>
-        <p>Capital {countryDetails.capital}</p>
-        <p>Area {countryDetails.area}</p>
+        <h2 style={style}>{data.name.common}</h2>
+        <p>Capital {data.capital}</p>
+        <p>Area {data.area}</p>
         <h3 style={style}>languages:</h3>
-        <Languages langs={countryDetails.languages} />
-        <img src={countryDetails.flags.png} alt={`Flag of ${country}`} />
+        <Languages langs={data.languages} />
+        <img src={data.flags.png} alt={`Flag of ${country}`} />
+        <h3 style={style}>Weather in {data.capital}</h3>
+        <Weather city={data.capital} />
       </div>
     )
   }
