@@ -3,6 +3,11 @@ import apiService from '../services/apiService'
 import Languages from './Languages'
 
 const CountryList = ({ country }) => {
+  const [selectedCountry, setSelectedCountry] = useState(country)
+  const sync = () => {
+    setSelectedCountry(country)
+  }
+  useEffect(sync, [country])
   const style = {
     margin: '0 20',
   }
@@ -36,14 +41,27 @@ const CountryList = ({ country }) => {
     )
   }
 
-  if (country.length === 250) {
+  if (selectedCountry.length === 250) {
     return null
-  } else if (country.length > 10) {
+  } else if (selectedCountry.length > 10) {
     return 'Too many matches, specify another filter'
-  } else if (country.length === 1) {
-    return <Country name={country[0]} />
+  } else if (selectedCountry.length === 1) {
+    return <Country name={selectedCountry[0]} />
   } else {
-    return country.map((name) => <li key={name}>{name}</li>)
+    return selectedCountry.map((name) => (
+      <li key={name}>
+        {name}
+        <button
+          onClick={(event) => {
+            event.preventDefault()
+            const oneCountry = [name]
+            setSelectedCountry(oneCountry)
+          }}
+        >
+          show
+        </button>
+      </li>
+    ))
   }
 }
 
